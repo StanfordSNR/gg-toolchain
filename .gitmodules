@@ -2,3 +2,7 @@
 	path = gcc
 	url = https://github.com/gcc-mirror/gcc
 	update = none
+[submodule "musl"]
+	path = musl
+	url = git://git.musl-libc.org/musl
+	update = none
