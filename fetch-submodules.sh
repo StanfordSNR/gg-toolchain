@@ -3,8 +3,8 @@
 git submodule init
 mkdir -p $(git rev-parse --git-dir)/modules
 
-# shallow clone of gcc at tag gcc-6_4_0-release
-git clone --depth 1 --branch gcc-6_4_0-release --separate-git-dir $(git rev-parse --git-dir)/modules/gcc https://github.com/gcc-mirror/gcc
+# shallow clone of gcc at tag gcc-7_1_0-release
+git clone --depth 1 --branch gcc-7_1_0-release --separate-git-dir $(git rev-parse --git-dir)/modules/gcc https://github.com/gcc-mirror/gcc
 
 # shallow clone of libgg (master)
 git clone --depth 1 --branch master --separate-git-dir $(git rev-parse --git-dir)/modules/libgg https://github.com/stanfordsnr/libgg
