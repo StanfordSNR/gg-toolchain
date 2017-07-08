@@ -9,10 +9,10 @@ mkdir -p inst
 export PATH=${SRCDIR}/inst/bin:$PATH
 export LD_LIBRARY_PATH=${SRCDIR}/inst/lib:${SRCDIR}/inst/x86_64-linux-musl/lib64
 
-# build and install musl (XXX will become libgg)
-mkdir -p build/musl
-pushd build/musl
-../../musl/configure --prefix=${SRCDIR}/inst --syslibdir=${SRCDIR}/inst/lib
+# build and install libgg
+mkdir -p build/libgg
+pushd build/libgg
+../../libgg/configure --prefix=${SRCDIR}/inst --syslibdir=${SRCDIR}/inst/lib
 make -j${NCPU}
 make install
 popd
@@ -35,4 +35,3 @@ pushd build/gg-gcc
 make -j${NCPU}
 make install
 popd
-
