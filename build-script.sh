@@ -1,7 +1,7 @@
 #!/bin/bash -xe
 
 SRCDIR=`pwd`
-NCPU=`nproc`
+NCPU=$(dc -e "[`nproc`]sM 8d `nproc`<Mp")
 
 mkdir -p build
 mkdir -p inst
