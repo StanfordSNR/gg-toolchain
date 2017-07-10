@@ -2,6 +2,7 @@
 
 SRCDIR=$(shell pwd)
 NCPU=$(shell nproc)
+GG_ROOT=$(HOME)/.gg
 
 export PATH := $(SRCDIR)/inst/bin:$(PATH)
 export LD_LIBRARY_PATH := $(SRCDIR)/inst/lib:$(SRCDIR)/inst/x86_64-linux-musl/lib64
@@ -58,3 +59,9 @@ gg-gcc: gnu-to-gg-gcc
 	make -j$(NCPU)
 	make install-strip
 	popd
+
+install:
+	mkdir -p $(GG_ROOT)/exe/bin
+	cp $(SRCDIR)/inst/bin/gg-gcc $(GG_ROOT)/exe/bin/gcc
+	cp $(SRCDIR)/inst/libexec/gcc/x86_64-linux-gnu/7.1.0/cc1 $(GG_ROOT)/exe/bin/cc1
+	cp /usr/bin/x86_64-linux-gnu-as $(GG_ROOT)/exe/bin/as
