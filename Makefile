@@ -125,3 +125,10 @@ install:
 	cp $(SRCDIR)/inst/bin/gg-gcc $(GG_ROOT)/exe/bin/gcc
 	cp $(SRCDIR)/inst/libexec/gcc/x86_64-linux-gnu/7.1.0/cc1 $(GG_ROOT)/exe/bin/cc1
 	cp $(SRCDIR)/inst/bin/gg-as $(GG_ROOT)/exe/bin/as
+
+S3_ROOT=s3://gg-us-west-2/bin
+
+update-s3:
+	aws s3 cp $(SRCDIR)/inst/bin/gg-gcc $(S3_ROOT)/gcc
+	aws s3 cp $(SRCDIR)/inst/libexec/gcc/x86_64-linux-gnu/7.1.0/cc1 $(S3_ROOT)/cc1
+	aws s3 cp $(SRCDIR)/inst/bin/gg-as $(S3_ROOT)/as
