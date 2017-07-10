@@ -15,6 +15,7 @@ fetch-submodules:
 	git submodule init
 	mkdir -p $(shell git rev-parse --git-dir)/modules
 	git clone --depth 1 --branch gcc-7_1_0-release --separate-git-dir $(shell git rev-parse --git-dir)/modules/gcc https://github.com/gcc-mirror/gcc
+	git clone --depth 1 --branch binutils-2_28 --separate-git-dir $(shell git rev-parse --git-dir)/modules/binutils-gdb git://sourceware.org/git/binutils-gdb.git
 	git clone --depth 1 --branch gg --separate-git-dir $(shell git rev-parse --git-dir)/modules/libgg https://github.com/stanfordsnr/libgg
 	cd gcc && ./contrib/download_prerequisites
 
