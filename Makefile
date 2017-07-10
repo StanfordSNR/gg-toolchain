@@ -8,6 +8,8 @@ export LD_LIBRARY_PATH := $(SRCDIR)/inst/lib:$(SRCDIR)/inst/x86_64-linux-musl/li
 
 .PHONY: fetch-submodules create-folders libgg binutils-symlinks gnu-to-gg-gcc gg-gcc
 
+all: gg-gcc
+
 fetch-submodules:
 	git submodule init
 	mkdir -p $(shell git rev-parse --git-dir)/modules
@@ -56,5 +58,3 @@ gg-gcc: gnu-to-gg-gcc
 	make -j$(NCPU)
 	make install-strip
 	popd
-
-all: gg-gcc
