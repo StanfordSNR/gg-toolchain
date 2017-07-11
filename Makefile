@@ -10,7 +10,7 @@ export LD_LIBRARY_PATH := $(SRCDIR)/inst/lib:$(SRCDIR)/inst/x86_64-linux-musl/li
 .PHONY: fetch-submodules create-folders gnu-to-gg-binutils gnu-to-gg-gcc \
 				gg-gcc gg-binutils install
 
-all: gg-gcc gg-binutils
+all: gg-binutils gg-gcc
 
 fetch-submodules:
 	git submodule init
@@ -55,7 +55,8 @@ gnu-to-gg-binutils: libgg
 															 --build=x86_64-linux-gnu --host=x86_64-linux-gnu \
 															 --target=x86_64-linux-musl \
 															 --program-prefix="gnu-to-gg-" \
-															 --with-build-sysroot=$(SRCDIR)/inst
+															 --with-sysroot=$(SRCDIR)/inst
+	make configure-host
 	make -j$(NCPU)
 	make install
 	popd
@@ -86,9 +87,9 @@ gg-binutils: gnu-to-gg-binutils gnu-to-gg-gcc
 															 --build=x86_64-linux-musl --host=x86_64-linux-musl \
 				 											 --target=x86_64-linux-gnu \
 															 --program-prefix="gg-" \
-															 --with-build-sysroot=/ \
-															 CC="gnu-to-gg-gcc" \
-				 											 CXX="gnu-to-gg-g++" \
+															 --with-sysroot=/ \
+															 CC="gnu-to-gg-gcc -Wl,-I$(SRCDIR)/inst/lib/libc.so" \
+				 											 CXX="gnu-to-gg-g++ -Wl,-I$(SRCDIR)/inst/lib/libc.so" \
 															 AR="gnu-to-gg-ar" \
 															 AS="gnu-to-gg-as" \
 															 LD="gnu-to-gg-ld" \
