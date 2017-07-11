@@ -1,8 +1,14 @@
 #!/usr/bin/make -f
 
-SRCDIR=$(shell pwd)
-NCPU=$(shell nproc)
-GG_ROOT=$(HOME)/.gg
+SRCDIR  := $(shell pwd)
+NCPU    := $(shell nproc)
+GG_ROOT := $(HOME)/.gg
+
+BUILD_DIR = build
+LIBGG_DIR = $(BUILD_DIR)/libgg
+GNU_TO_GG_GCC_DIR = $(BUILD_DIR)/gnu-to-gg-gcc
+GG_BINUTILS_DIR = $(BUILD_DIR)/gg-binutils
+GG_GCC_DIR = $(BUILD_DIR)/gg-gcc
 
 export PATH := $(SRCDIR)/inst/bin:$(PATH)
 export LD_LIBRARY_PATH := $(SRCDIR)/inst/lib:$(SRCDIR)/inst/x86_64-linux-musl/lib64
@@ -13,37 +19,17 @@ export LD_LIBRARY_PATH := $(SRCDIR)/inst/lib:$(SRCDIR)/inst/x86_64-linux-musl/li
 all: gg-binutils gg-gcc
 
 fetch-submodules:
-	git submodule init
-	mkdir -p $(shell git rev-parse --git-dir)/modules
-
-	git clone --depth 1 --branch gcc-7_1_0-release \
-		--separate-git-dir $(shell git rev-parse --git-dir)/modules/gcc \
-		https://github.com/gcc-mirror/gcc
-
-	git clone --depth 1 --branch binutils-2_28 \
-		--separate-git-dir $(shell git rev-parse --git-dir)/modules/binutils-gdb \
-		git://sourceware.org/git/binutils-gdb.git
-
-	git clone --depth 1 --branch gg
-		--separate-git-dir $(shell git rev-parse --git-dir)/modules/libgg \
-		https://github.com/stanfordsnr/libgg
-
-	cd gcc && ./contrib/download_prerequisites
+	./fetch-submodules.sh
 
 create-folders:
 	mkdir -p build
 	mkdir -p inst/bin
 
-.ONESHELL:
-SHELL = /bin/bash
-.SHELLFLAGS = -e
 libgg: fetch-submodules create-folders
-	mkdir -p build/libgg
-	pushd build/libgg
-	../../libgg/configure --prefix=$(SRCDIR)/inst --syslibdir=$(SRCDIR)/inst/lib
-	make -j$(NCPU)
-	make install
-	popd
+	mkdir -p $(LIBGG_DIR)
+	cd $(LIBGG_DIR) && \
+		../../libgg/configure --prefix=$(SRCDIR)/inst --syslibdir=$(SRCDIR)/inst/lib && \
+		make -j$(NCPU) && make install
 
 create-binutils-symlinks: create-folders
 	ln -sf /usr/bin/x86_64-linux-gnu-strip inst/bin/x86_64-linux-musl-strip
@@ -53,54 +39,40 @@ create-binutils-symlinks: create-folders
 	ln -sf /usr/bin/x86_64-linux-gnu-as inst/bin/x86_64-linux-musl-as
 	ln -sf /usr/bin/x86_64-linux-gnu-ar inst/bin/x86_64-linux-musl-ar
 
-.ONESHELL:
-SHELL = /bin/bash
-.SHELLFLAGS = -e
 gnu-to-gg-gcc: libgg create-binutils-symlinks
-	mkdir -p build/gnu-to-gg-gcc
-	pushd build/gnu-to-gg-gcc
-	../../gcc/configure --enable-languages=c,c++ --prefix=$(SRCDIR)/inst \
-		--disable-multilib --disable-libsanitizer --disable-bootstrap --disable-nls \
-		--program-prefix="gnu-to-gg-" --with-sysroot=$(SRCDIR)/inst \
-		--with-native-system-header-dir=/include --build=x86_64-linux-gnu \
-		--host=x86_64-linux-gnu --target=x86_64-linux-musl --enable-checking=release
-	make -j$(NCPU)
-	make install
-	popd
+	mkdir -p $(GNU_TO_GG_GCC_DIR)
+	cd $(GNU_TO_GG_GCC_DIR) && \
+		../../gcc/configure --enable-languages=c,c++ --prefix=$(SRCDIR)/inst \
+			--disable-multilib --disable-libsanitizer --disable-bootstrap --disable-nls \
+			--program-prefix="gnu-to-gg-" --with-sysroot=$(SRCDIR)/inst \
+			--with-native-system-header-dir=/include --build=x86_64-linux-gnu \
+			--host=x86_64-linux-gnu --target=x86_64-linux-musl --enable-checking=release && \
+		make -j$(NCPU) && make install
 
-.ONESHELL:
-SHELL = /bin/bash
-.SHELLFLAGS = -e
 gg-binutils: gnu-to-gg-gcc
-	mkdir -p build/gg-binutils
-	pushd build/gg-binutils
+	mkdir -p $(GG_BINUTILS_DIR)
+	cd $(GG_BINUTILS_DIR) && \
 		../../binutils-gdb/configure --prefix=$(SRCDIR)/inst --disable-bootstrap \
-		--disable-werror --disable-nls --build=x86_64-linux-musl \
-		--host=x86_64-linux-musl --target=x86_64-linux-gnu --program-prefix="gg-" \
-		--with-sysroot=/ \
-		CC="gnu-to-gg-gcc -Wl,-I$(SRCDIR)/inst/lib/libc.so" \
-		CXX="gnu-to-gg-g++ -Wl,-I$(SRCDIR)/inst/lib/libc.so"
-	make configure-host
-	make LDFLAGS=-all-static -j$(NCPU)
-	make install
-	popd
+			--disable-werror --disable-nls --build=x86_64-linux-musl \
+			--host=x86_64-linux-musl --target=x86_64-linux-gnu --program-prefix="gg-" \
+			--disable-shared \
+			CC="gnu-to-gg-gcc -Wl,-I$(SRCDIR)/inst/lib/libc.so" \
+			CXX="gnu-to-gg-g++ -Wl,-I$(SRCDIR)/inst/lib/libc.so"
+	cd $(GG_BINUTILS_DIR) && make configure-host -j$(NCPU)
+	cd $(GG_BINUTILS_DIR) && make LDFLAGS="-Wl,-static" -j$(NCPU)
+	cd $(GG_BINUTILS_DIR) && make install
 
-.ONESHELL:
-SHELL = /bin/bash
-.SHELLFLAGS = -e
 gg-gcc: gnu-to-gg-gcc
-	mkdir -p build/gg-gcc
-	pushd build/gg-gcc
-	../../gcc/configure --enable-languages=c,c++ --prefix=$(SRCDIR)/inst \
-		--with-boot-ldflags=-static --with-stage1-ldflags=-static \
-		--disable-multilib --disable-bootstrap --disable-nls --program-prefix="gg-" \
-		--with-sysroot=/ --build=x86_64-linux-musl --host=x86_64-linux-musl \
-		--target=x86_64-linux-gnu --enable-checking=release \
-		CC="gnu-to-gg-gcc -Wl,-I$(SRCDIR)/inst/lib/libc.so" \
-		CXX="gnu-to-gg-g++ -Wl,-I$(SRCDIR)/inst/lib/libc.so"
-	make -j$(NCPU)
-	make install-strip
-	popd
+	mkdir -p $(GG_GCC_DIR)
+	cd $(GG_GCC_DIR) && \
+		../../gcc/configure --enable-languages=c,c++ --prefix=$(SRCDIR)/inst \
+			--with-boot-ldflags=-static --with-stage1-ldflags=-static \
+			--disable-multilib --disable-bootstrap --disable-nls --program-prefix="gg-" \
+			--with-sysroot=/ --build=x86_64-linux-musl --host=x86_64-linux-musl \
+			--target=x86_64-linux-gnu --enable-checking=release \
+			CC="gnu-to-gg-gcc -Wl,-I$(SRCDIR)/inst/lib/libc.so" \
+			CXX="gnu-to-gg-g++ -Wl,-I$(SRCDIR)/inst/lib/libc.so" && \
+		make -j$(NCPU) && make install-strip
 
 install:
 	mkdir -p $(GG_ROOT)/exe/bin
@@ -108,7 +80,7 @@ install:
 	cp $(SRCDIR)/inst/libexec/gcc/x86_64-linux-gnu/7.1.0/cc1 $(GG_ROOT)/exe/bin/cc1
 	cp $(SRCDIR)/inst/bin/gg-as $(GG_ROOT)/exe/bin/as
 
-S3_ROOT=s3://gg-us-west-2/bin
+S3_ROOT = s3://gg-us-west-2/bin
 
 update-s3:
 	aws s3 cp $(SRCDIR)/inst/bin/gg-gcc $(S3_ROOT)/gcc
