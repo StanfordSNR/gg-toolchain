@@ -75,10 +75,10 @@ gg-gcc: gnu-to-gg-gcc
 		make -j$(NCPU) && make install-strip
 
 install:
-	mkdir -p $(GG_ROOT)/exe/bin
-	cp $(SRCDIR)/inst/bin/gg-gcc $(GG_ROOT)/exe/bin/gcc
-	cp $(SRCDIR)/inst/libexec/gcc/x86_64-linux-gnu/7.1.0/cc1 $(GG_ROOT)/exe/bin/cc1
-	cp $(SRCDIR)/inst/bin/gg-as $(GG_ROOT)/exe/bin/as
+	mkdir -p $(GG_ROOT)/bin
+	cp $(SRCDIR)/inst/bin/gg-gcc $(GG_ROOT)/bin/gcc
+	cp $(SRCDIR)/inst/libexec/gcc/x86_64-linux-gnu/7.1.0/cc1 $(GG_ROOT)/bin/cc1
+	cp $(SRCDIR)/inst/bin/gg-as $(GG_ROOT)/bin/as
 
 S3_ROOT = s3://gg-us-west-2/bin
 
