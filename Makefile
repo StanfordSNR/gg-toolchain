@@ -7,8 +7,8 @@ GG_ROOT=$(HOME)/.gg
 export PATH := $(SRCDIR)/inst/bin:$(PATH)
 export LD_LIBRARY_PATH := $(SRCDIR)/inst/lib:$(SRCDIR)/inst/x86_64-linux-musl/lib64
 
-.PHONY: fetch-submodules create-folders gnu-to-gg-binutils gnu-to-gg-gcc \
-				gg-gcc gg-binutils install
+.PHONY: fetch-submodules create-folders gnu-to-gg-gcc gg-gcc gg-binutils \
+	create-binutils-symlinks install
 
 all: gg-binutils gg-gcc
 
@@ -32,11 +32,12 @@ fetch-submodules:
 
 create-folders:
 	mkdir -p build
-	mkdir -p inst
+	mkdir -p inst/bin
 
 .ONESHELL:
 SHELL = /bin/bash
-libgg: fetch-submodules
+.SHELLFLAGS = -e
+libgg: fetch-submodules create-folders
 	mkdir -p build/libgg
 	pushd build/libgg
 	../../libgg/configure --prefix=$(SRCDIR)/inst --syslibdir=$(SRCDIR)/inst/lib
@@ -44,23 +45,18 @@ libgg: fetch-submodules
 	make install
 	popd
 
-.ONESHELL:
-SHELL = /bin/bash
-gnu-to-gg-binutils: libgg
-	mkdir -p build/gnu-to-gg-binutils
-	pushd build/gnu-to-gg-binutils
-	../../binutils-gdb/configure --prefix=$(SRCDIR)/inst \
-		--disable-bootstrap --disable-werror --disable-nls \
-		--build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=x86_64-linux-musl \
-		--program-prefix="gnu-to-gg-" --with-sysroot=$(SRCDIR)/inst
-	make configure-host
-	make -j$(NCPU)
-	make install
-	popd
+create-binutils-symlinks: create-folders
+	ln -sf /usr/bin/x86_64-linux-gnu-strip inst/bin/x86_64-linux-musl-strip
+	ln -sf /usr/bin/x86_64-linux-gnu-ranlib inst/bin/x86_64-linux-musl-ranlib
+	ln -sf /usr/bin/x86_64-linux-gnu-nm inst/bin/x86_64-linux-musl-nm
+	ln -sf /usr/bin/x86_64-linux-gnu-ld inst/bin/x86_64-linux-musl-ld
+	ln -sf /usr/bin/x86_64-linux-gnu-as inst/bin/x86_64-linux-musl-as
+	ln -sf /usr/bin/x86_64-linux-gnu-ar inst/bin/x86_64-linux-musl-ar
 
 .ONESHELL:
 SHELL = /bin/bash
-gnu-to-gg-gcc: libgg
+.SHELLFLAGS = -e
+gnu-to-gg-gcc: libgg create-binutils-symlinks
 	mkdir -p build/gnu-to-gg-gcc
 	pushd build/gnu-to-gg-gcc
 	../../gcc/configure --enable-languages=c,c++ --prefix=$(SRCDIR)/inst \
@@ -74,7 +70,8 @@ gnu-to-gg-gcc: libgg
 
 .ONESHELL:
 SHELL = /bin/bash
-gg-binutils: gnu-to-gg-binutils gnu-to-gg-gcc
+.SHELLFLAGS = -e
+gg-binutils: gnu-to-gg-gcc
 	mkdir -p build/gg-binutils
 	pushd build/gg-binutils
 		../../binutils-gdb/configure --prefix=$(SRCDIR)/inst --disable-bootstrap \
@@ -90,6 +87,7 @@ gg-binutils: gnu-to-gg-binutils gnu-to-gg-gcc
 
 .ONESHELL:
 SHELL = /bin/bash
+.SHELLFLAGS = -e
 gg-gcc: gnu-to-gg-gcc
 	mkdir -p build/gg-gcc
 	pushd build/gg-gcc
