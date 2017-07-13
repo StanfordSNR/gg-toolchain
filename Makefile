@@ -86,3 +86,6 @@ update-s3:
 	aws s3 cp --acl public-read $(SRCDIR)/inst/bin/gg-gcc $(S3_ROOT)/gcc
 	aws s3 cp --acl public-read $(SRCDIR)/inst/libexec/gcc/x86_64-linux-gnu/7.1.0/cc1 $(S3_ROOT)/cc1
 	aws s3 cp --acl public-read $(SRCDIR)/inst/bin/gg-as $(S3_ROOT)/as
+
+clean:
+	rm -rf build/ inst/
