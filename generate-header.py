@@ -28,22 +28,15 @@ print("#include <string>")
 print()
 
 print("""\
-struct ToolchainProgram
+const std::string & toolchain_program( const std::string & name )
 {
-  std::string path;
-  std::string hash;
-};\n""")
-
-print("""\
-const ToolchainProgram & toolchain_program( const std::string & name )
-{
-  static const std::unordered_map<std::string, ToolchainProgram> programs = {""")
+  static const std::unordered_map<std::string, std::string> programs = {""")
 
 for exe in os.listdir(BINDIR):
     exe_path = os.path.join(BINDIR, exe)
     exe_hash = sha256_checksum(exe_path)
     print(" " * 4, end='')
-    print('{{ "{exe}", {{ "{path}", "{hash}" }} }},'.format(exe=exe, hash=exe_hash, path=exe_path))
+    print('{{ "{exe}", "{hash}" }},'.format(exe=exe, hash=exe_hash))
 
 print("  };\n")
 print("  return programs.at( name );")
