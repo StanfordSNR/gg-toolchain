@@ -66,7 +66,6 @@ gg-gcc: gnu-to-gg-gcc
 	mkdir -p $(GG_GCC_DIR)
 	cd $(GG_GCC_DIR) && \
 		../../gcc/configure --enable-languages=c,c++ --prefix=$(SRCDIR)/inst \
-			--with-boot-ldflags=-static --with-stage1-ldflags=-static \
 			--disable-multilib --disable-bootstrap --disable-nls --program-prefix="gg-" \
 			--with-sysroot=/ --build=x86_64-linux-musl --host=x86_64-linux-musl \
 			--target=x86_64-linux-gnu --enable-checking=release \
