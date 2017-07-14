@@ -18,5 +18,5 @@ pushd build/gg-binutils
 rm -f gas/as-new ld/ld-new binutils/ar binutils/nm-new binutils/ranlib binutils/strip-new
 make -j${NCPU} configure-host
 make -j${NCPU} LDFLAGS="-all-static"
-make DESTDIR=${SRCDIR}/inst install-strip
+make DESTDIR=${SRCDIR}/inst install
 popd

@@ -18,5 +18,10 @@ do
   cp ${GCC_INSTDIR}/${exe} ${DESTDIR}/${exe}
 done
 
+for exe in $(ls ${DESTDIR})
+do
+  strip ${DESTDIR}/${exe}
+done
+
 mkdir -p ${INCLUDEDIR}
 ./generate-header.py >${INCLUDEDIR}/toolchain.hh
