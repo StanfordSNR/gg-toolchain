@@ -64,7 +64,7 @@ mkdir -p build/gg-binutils
 pushd build/gg-binutils
 if [ ! -z ${DO_CONFIGURE+x} ]
 then
-  ../../binutils-gdb/configure --prefix=/usr --disable-gdb --disable-readline --disable-sim --build=x86_64-linux-musl --host=x86_64-linux-musl --target=x86_64-linux-gnu --program-prefix="gg-" CC="gnu-to-gg-gcc -Wl,-I${SRCDIR}/deps/lib/libc.so" CXX="gnu-to-gg-g++ -Wl,-I${SRCDIR}/deps/lib/libc.so"
+  ../../binutils-gdb/configure --prefix=/usr --disable-gdb --disable-readline --disable-sim --enable-deterministic-archives --build=x86_64-linux-musl --host=x86_64-linux-musl --target=x86_64-linux-gnu --program-prefix="gg-" CC="gnu-to-gg-gcc -Wl,-I${SRCDIR}/deps/lib/libc.so" CXX="gnu-to-gg-g++ -Wl,-I${SRCDIR}/deps/lib/libc.so"
 fi
 make -j${NCPU}
 make DESTDIR=${SRCDIR}/inst install
