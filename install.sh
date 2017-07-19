@@ -12,7 +12,7 @@ do
   cp ${INSTDIR}/gg-${exe} ${DESTDIR}/${exe}
 done
 
-for exe in cc1
+for exe in cc1 collect2
 do
   cp ${GCC_INSTDIR}/${exe} ${DESTDIR}/${exe}
 done
