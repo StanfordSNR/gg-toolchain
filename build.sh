@@ -42,7 +42,7 @@ mkdir -p build/gnu-to-gg-gcc
 pushd build/gnu-to-gg-gcc
 if [ ! -z ${DO_CONFIGURE+x} ]
 then
-  ../../gcc/configure --enable-languages=c,c++ --prefix=${SRCDIR}/deps --disable-multilib --disable-libsanitizer --disable-bootstrap --disable-nls --program-prefix="gnu-to-gg-" --with-sysroot=${SRCDIR}/deps --with-native-system-header-dir=/include --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=x86_64-linux-musl --enable-checking=release
+  ../../gcc/configure --enable-languages=c,c++ --prefix=${SRCDIR}/deps --disable-multilib --disable-libsanitizer --disable-bootstrap --disable-nls --program-prefix="gnu-to-gg-" --with-sysroot=${SRCDIR}/deps --with-native-system-header-dir=/include --build=x86_64-linux-gnu --host=x86_64-linux-gnu --target=x86_64-linux-musl --enable-checking=release --disable-lto --with-gcc-major-version-only
 fi
 make -j${NCPU}
 make install-strip
@@ -53,7 +53,7 @@ mkdir -p build/gg-gcc
 pushd build/gg-gcc
 if [ ! -z ${DO_CONFIGURE+x} ]
 then
-  ../../gcc/configure --enable-languages=c,c++ --prefix=/usr --disable-multilib --disable-bootstrap --disable-nls --program-prefix="gg-" --with-sysroot=/ --build=x86_64-linux-musl --host=x86_64-linux-musl --target=x86_64-linux-gnu --enable-checking=release CC="gnu-to-gg-gcc -Wl,-I${SRCDIR}/deps/lib/libc.so" CXX="gnu-to-gg-g++ -Wl,-I${SRCDIR}/deps/lib/libc.so"
+  ../../gcc/configure --enable-languages=c,c++ --prefix=/usr --disable-multilib --disable-bootstrap --disable-nls --program-prefix="gg-" --with-sysroot=/ --build=x86_64-linux-musl --host=x86_64-linux-musl --target=x86_64-linux-gnu --enable-checking=release --disable-lto --with-gcc-major-version-only CC="gnu-to-gg-gcc -Wl,-I${SRCDIR}/deps/lib/libc.so" CXX="gnu-to-gg-g++ -Wl,-I${SRCDIR}/deps/lib/libc.so"
 fi
 make -j${NCPU}
 make DESTDIR=${SRCDIR}/inst install
