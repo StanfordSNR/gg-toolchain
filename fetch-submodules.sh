@@ -5,7 +5,7 @@ GIT_DIR=$(git rev-parse --git-dir)
 git submodule init
 mkdir -p ${GIT_DIR}/modules
 
-git clone --depth 1 --branch gcc-7_1_0-release \
+git clone --depth 1 --branch gcc-7_2_0-release \
   --separate-git-dir ${GIT_DIR}/modules/gcc \
   https://github.com/gcc-mirror/gcc || true
 
