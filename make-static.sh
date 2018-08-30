@@ -15,7 +15,7 @@ popd
 
 # build and install gg-binutils
 pushd build/gg-binutils
-rm -f gas/as-new ld/ld-new binutils/ar binutils/nm-new binutils/ranlib binutils/strip-new
+rm -f gas/as-new ld/ld-new binutils/ar binutils/nm-new binutils/ranlib binutils/strip-new binutils/readelf
 make -j${NCPU} configure-host
 make -j${NCPU} LDFLAGS="-all-static"
 make DESTDIR=${SRCDIR}/inst install

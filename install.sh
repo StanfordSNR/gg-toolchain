@@ -7,7 +7,7 @@ GCC_INSTDIR=${SRCDIR}/inst/usr/libexec/gcc/x86_64-linux-gnu/7
 
 mkdir -p ${DESTDIR}
 
-for exe in g++ gcc ld as ar ranlib nm strip as
+for exe in g++ gcc ld as ar ranlib nm strip as readelf
 do
   cp ${INSTDIR}/gg-${exe} ${DESTDIR}/${exe}
 done
