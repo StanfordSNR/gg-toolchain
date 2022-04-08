@@ -3,7 +3,7 @@
 SRCDIR=`pwd`
 DESTDIR=${SRCDIR}/bin
 INSTDIR=${SRCDIR}/inst/usr/bin
-GCC_INSTDIR=${SRCDIR}/inst/usr/libexec/gcc/x86_64-linux-gnu/7
+GCC_INSTDIR=${SRCDIR}/inst/usr/libexec/gcc/x86_64-linux-gnu/11
 
 mkdir -p ${DESTDIR}
 
